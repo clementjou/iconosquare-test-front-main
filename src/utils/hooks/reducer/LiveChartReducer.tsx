@@ -53,7 +53,7 @@ const liveChartReducer = (
       return handleSetSync(state);
     // Gère la mise à jour d'un événement existant dans le graphique en direct.
     case "update_event":
-      return handleUpdateEvent(state);
+      return handleUpdateEvent(state, action?.payload);
     // Gère la sélection d'un événement pour l'édition dans le graphique en direct.
     case "set_editing_event":
       return handleSetEditingEvent(state, action?.payload);

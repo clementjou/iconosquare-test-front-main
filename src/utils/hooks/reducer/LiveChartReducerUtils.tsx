@@ -104,10 +104,28 @@ export const handleSetPause = (
 
 // Gère la mise à jour d'un événement, enregistrant les modifications et mettant à jour l'affichage.
 export const handleUpdateEvent = (
-  state: ILiveChartState
+  state: ILiveChartState,
+  payload: ILiveChartReducerPayload
 ): ILiveChartState => {
   const updatedState = {
     ...state,
+    updatedValues: state.updatedValues.some(
+      (value) =>
+        value.index === state.editState.index &&
+        value.field === state.editState.field
+    )
+      ? [...state.updatedValues]
+      : [...state.updatedValues, { ...state.editState }],
+    editState: null,
+    events: state.events.map((event) => {
+      if (event.index === payload?.event?.index) {
+        return {
+          ...event,
+          ...payload?.event,
+        };
+      }
+      return event;
+    }),
   };
 
   // Met à jour les événements affichés avec le nouvel état.
@@ -133,8 +151,21 @@ export const handleSetEditingEvent = (
 
 // Réinitialise les valeurs mises à jour après l'édition d'événements.
 export const handleResetUpdatedValues = (state: ILiveChartState) => {
+  
   const updatedState = {
     ...state,
+    events: state.events.map((event) => {
+      const updatedValues = state.updatedValues.filter(
+        (updatedValue) => updatedValue.index === event.index
+      );
+      if (updatedValues?.length) {
+        updatedValues.forEach((updatedValue) => {
+          event[updatedValue.field] = updatedValue.value;
+        });
+      }
+      return event;
+    }),
+    updatedValues: [],
   };
 
   // Met à jour les événements affichés avec le nouvel état.
